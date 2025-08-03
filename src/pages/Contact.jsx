@@ -23,6 +23,73 @@ export default function Contact() {
     },
   });
 
+  async function sendToTelegram(data) {
+    const telegramToken = import.meta.env.VITE_TELEGRAM_TOKEN;
+    const chatId = import.meta.env.VITE_TELEGRAM_ID;
+    if (!telegramToken || !chatId) {
+      console.error("Credenziali Telegram mancanti!");
+      return false;
+    }
+    const apiUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout di 5 secondi
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: formatTelegramMessage(data),
+          parse_mode: "HTML",
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Telegram API error: ${errorData.description || response.status}`
+        );
+      }
+      return true;
+    } catch (error) {
+      console.error("Errore Telegram API:", {
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        data: {
+          name: data.name,
+          email: data.email,
+          messageLength: data.message.length,
+        },
+      });
+      return false;
+    }
+  }
+
+  function formatTelegramMessage(data) {
+    return `🚀 <b>Nuovo Messaggio</b> 🚀
+
+<b>Nome</b>: ${escapeHTML(data.name)}
+<b>Email</b>: ${escapeHTML(data.email)}
+
+<b>Messaggio</b>:
+${escapeHTML(data.message)}
+
+<i>Inviato il ${new Date().toLocaleString("it-IT")}</i>`;
+  }
+
+  function escapeHTML(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function escapeMarkdown(text) {
+    return text.replace(/[_*[\]()~`>#+-=|{}.!]/g, "\\$&");
+  }
+
   async function onSubmit(data) {
     setIsLoading(true);
 
@@ -47,7 +114,21 @@ export default function Contact() {
     console.groupEnd();
 
     try {
-      // 2. Tracciamento performance
+      // 1. Prima prova a inviare a Telegram
+      console.log("[Telegram] Attempting to send message to Telegram...");
+      const telegramSuccess = await sendToTelegram(data);
+
+      if (telegramSuccess) {
+        console.log("[Telegram] Message successfully sent to Telegram");
+        toast.success("Message sent!", {
+          description: "Thanks for reaching out. I'll get back to you soon!",
+        });
+        form.reset();
+        return; // Esci se Telegram ha funzionato
+      }
+
+      // 2. Se Telegram fallisce, prova con l'email
+      console.log("[Telegram] Failed, falling back to email...");
       const startTime = performance.now();
 
       console.log("Request headers:", {

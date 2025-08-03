@@ -9,4 +9,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  envPrefix: "VITE_", // Obbligatorio per esporre variabili al client
 });
