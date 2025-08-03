@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-10 px-6 lg:gap-24 lg:py-12">
       {/* Testo */}
-      <div className="w-full lg:w-3/5 max-w-2xl text-center lg:text-left">
-        <h1 className="text-foreground text-4xl md:text-6xl font-bold mb-3 leading-tight">
+      <div className="w-full lg:w-3/5 max-w-3xl text-center lg:text-left">
+        <h1 className="text-foreground text-3xl sm:text-4xl md:text-6xl mb-3 break-words">
           Hi, I'm Carlo Gasparini
         </h1>
         <h2 className="text-2xl md:text-3xl text-accent font-semibold mb-6">
