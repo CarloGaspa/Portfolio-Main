@@ -59,7 +59,7 @@ export default function Contact() {
       const response = await fetch("/api/sendEmail", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify(data),
       });
 
       const responseTime = performance.now() - startTime;
