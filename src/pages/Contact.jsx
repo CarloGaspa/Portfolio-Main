@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function Contact() {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     defaultValues: {
       name: "",
@@ -21,12 +23,134 @@ export default function Contact() {
     },
   });
 
-  function onSubmit(data) {
-    console.log("Form data:", data);
-    toast.success("Message sent!", {
-      description: "Thanks for reaching out. I'll get back to you soon!",
-    });
-    form.reset();
+  async function onSubmit(data) {
+    setIsLoading(true);
+
+    // 1. Log iniziale con struttura standardizzata
+    const logContext = {
+      timestamp: new Date().toISOString(),
+      formData: {
+        name: data.name,
+        email: data.email,
+        messageLength: data.message.length, // Evita di loggare messaggi lunghi
+      },
+      session: {
+        referrer: document.referrer,
+        userAgent: navigator.userAgent,
+      },
+    };
+
+    console.groupCollapsed(
+      `[ContactForm] Submission started at ${logContext.timestamp}`
+    );
+    console.log("Submission context:", logContext);
+    console.groupEnd();
+
+    try {
+      // 2. Tracciamento performance
+      const startTime = performance.now();
+
+      console.log("Request headers:", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        bodySize: JSON.stringify(data).length,
+      });
+
+      const response = await fetch("/api/sendEmail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseTime = performance.now() - startTime;
+
+      // 3. Log della risposta con timing
+      console.log(
+        `[Network] Response received in ${responseTime.toFixed(2)}ms`,
+        {
+          status: response.status,
+          statusText: response.statusText,
+          contentType: response.headers.get("content-type"),
+          size: response.headers.get("content-length") || "unknown",
+        }
+      );
+
+      // 4. Gestione risposta più robusta
+      let result = {};
+      const responseText = await response.text();
+
+      try {
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (e) {
+        console.warn("[Warning] Malformed JSON response:", {
+          responseText,
+          error: e.message,
+        });
+      }
+
+      // 5. Log differenziato per stato
+      if (!response.ok) {
+        console.groupCollapsed(
+          `[Error] Server responded with ${response.status}`
+        );
+        console.error(
+          "Error details:",
+          result.error || "No error details provided"
+        );
+        console.log("Full response:", result);
+        console.groupEnd();
+
+        throw new Error(result.error || `Server error: ${response.status}`);
+      }
+
+      // 6. Log di successo con analytics
+      console.log("[Success] Form submitted successfully", {
+        response: result,
+        duration: responseTime,
+      });
+
+      toast.success("Message sent!", {
+        description: "Thanks for reaching out. I'll get back to you soon!",
+      });
+      form.reset();
+    } catch (error) {
+      // 7. Gestione errori avanzata
+      const errorContext = {
+        name: error.name,
+        message: error.message,
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+        time: new Date().toISOString(),
+      };
+
+      console.groupCollapsed(`[Critical] Submission failed - ${error.message}`);
+      console.error("Error details:", errorContext);
+      console.log("Original form data:", logContext.formData);
+      console.groupEnd();
+
+      // 8. Messaggi toast differenziati
+      const userMessage = error.message.includes("404")
+        ? "Service temporarily unavailable"
+        : error.message.includes("500")
+        ? "Internal server error"
+        : "There was an error sending your message";
+
+      toast.error("Error", {
+        description: userMessage,
+      });
+
+      // 9. Invia l'errore a un servizio di tracking (opzionale)
+      if (typeof window.trackError === "function") {
+        window.trackError("contact_form_error", {
+          ...errorContext,
+          ...logContext,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+
+      // 10. Log finale
+      console.log("[Status] Form submission process completed");
+    }
   }
 
   return (
@@ -39,7 +163,13 @@ export default function Contact() {
           <FormField
             control={form.control}
             name="name"
-            rules={{ required: "Name is required" }}
+            rules={{
+              required: "Name is required",
+              minLength: {
+                value: 2,
+                message: "Name must be at least 2 characters",
+              },
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">Name</FormLabel>
@@ -50,13 +180,14 @@ export default function Contact() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="email"
             rules={{
               required: "Email is required",
               pattern: {
-                value: /^\S+@\S+$/i,
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: "Invalid email address",
               },
             }}
@@ -74,16 +205,23 @@ export default function Contact() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="message"
-            rules={{ required: "Message is required" }}
+            rules={{
+              required: "Message is required",
+              minLength: {
+                value: 10,
+                message: "Message must be at least 10 characters",
+              },
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">Message</FormLabel>
                 <FormControl>
                   <Textarea
-                    className="text-foreground"
+                    className="min-h-[120px] text-foreground"
                     placeholder="Write your message here"
                     {...field}
                   />
@@ -93,11 +231,56 @@ export default function Contact() {
             )}
           />
 
-          <Button type="submit" variant="default" className="w-full">
-            Send Message
+          <Button
+            type="submit"
+            variant="default"
+            className="w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
           </Button>
         </form>
       </Form>
+
+      {/* Footer conforme alle normative */}
+      <div className="mt-8 pt-4 border-t border-border text-xs text-muted-foreground text-center">
+        <p>Carlo Gasparini - 31030 Treviso, Italy</p>
+        {/*         <p className="mt-1">
+          <a href="/privacy" className="hover:underline">
+            Privacy Policy
+          </a>{" "}
+          |{" "}
+          <a href="/unsubscribe" className="hover:underline">
+            Unsubscribe
+          </a>
+        </p> */}
+      </div>
     </div>
   );
 }
