@@ -7,7 +7,7 @@ export default function Home() {
   const isDarkMode = useStore((state) => state.isDarkMode);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-10 px-6 lg:gap-24 lg:py-12">
+    <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-5 px-6 lg:gap-24 lg:py-12">
       {/* Testo */}
       <div className="w-full lg:w-3/5 max-w-3xl text-center lg:text-left">
         <h1 className="text-foreground text-3xl sm:text-4xl md:text-6xl mb-3 break-words">
@@ -23,7 +23,7 @@ export default function Home() {
           best practices. When I'm not coding, I enjoy learning new tools and
           improving my skills to deliver the best results.
         </p>
-        <div className="mt-10">
+        <div className="mt-4 lg:mt-10">
           <Button variant="custom" onClick={() => navigate("/Contact")}>
             Contact Me
           </Button>

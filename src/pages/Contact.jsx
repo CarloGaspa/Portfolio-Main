@@ -236,7 +236,7 @@ ${escapeHTML(data.message)}
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-card rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center text-foreground">
+      <h1 className="text-3xl font-bold mb-3 lg:mb-6 text-center text-foreground">
         Contact Me
       </h1>
       <Form {...form}>

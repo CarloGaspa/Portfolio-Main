@@ -94,9 +94,9 @@ function PageTitleUpdater() {
 function Navbar() {
   const location = useLocation();
   return (
-    <nav className="relative text-foreground font-bold px-6 py-2 sm:py-4 lg:py-5 flex items-center h-[60px] sm:h-auto">
+    <nav className="relative text-foreground font-bold px-3 py-2 sm:py-4 lg:py-5 flex items-center h-[60px] sm:h-auto">
       <h1 className="text-2xl pl-4 hidden md:block">Carlo.</h1>
-      <div className="flex flex-1 items-center justify-center gap-4 whitespace-nowrap text-sm sm:text-base relative lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+      <div className="flex flex-1 items-center justify-center gap-3 sm:gap-4 whitespace-nowrap text-sm sm:text-base relative lg:absolute lg:left-1/2 lg:-translate-x-1/2">
         {pages.map(({ path, name }) => (
           <Link
             key={path}
@@ -109,9 +109,9 @@ function Navbar() {
           >
             {name}
           </Link>
-        ))}
-      </div>
-      <div className="ml-2 flex items-center h-8 lg:absolute lg:right-3 lg:ml-0">
+        ))}{" "}
+      </div>{" "}
+      <div className="flex items-center h-8 ml-auto md:ml-2 lg:absolute lg:right-3 lg:ml-0 pl-1">
         <ThemeToggle />
       </div>
     </nav>
