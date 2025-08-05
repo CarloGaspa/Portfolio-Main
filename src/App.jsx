@@ -25,7 +25,7 @@ const pages = [
     description:
       "Portfolio di Carlo Gasparini, sviluppatore frontend specializzato in React, Next.js e UI/UX design. Scopri i miei progetti e competenze.",
   },
-  {
+  /*  {
     path: "/About",
     name: "About",
     element: <About />,
@@ -40,7 +40,7 @@ const pages = [
     title: "Services | Web Development",
     description:
       "Servizi offerti da Carlo Gasparini: sviluppo web, creazione di interfacce responsive, ottimizzazione SEO e performance.",
-  },
+  }, */
   {
     path: "/Portfolio",
     name: "Portfolio",
