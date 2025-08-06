@@ -18,13 +18,75 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/portfolio.svg" />
 
+    <!-- Critical CSS (prevents layout shift) -->
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      #root {
+        min-height: 100vh;
+        opacity: 0;
+      }
+      .loaded #root {
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+      }
+    </style>
+
     <!-- Preload critical resources -->
     <link rel="preload" as="script" href="/src/main.jsx" />
     <link rel="preload" as="style" href="/src/index.css" />
+    <link
+      rel="stylesheet"
+      href="/src/index.css"
+      media="print"
+      onload="this.media='all'"
+    />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Initial loader that disappears when app mounts -->
+    <script>
+      // Apply 'loaded' class when JS is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("js-enabled");
+      });
+
+      // Theme persistence to prevent flash
+      const savedTheme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+      document.documentElement.classList.add(savedTheme);
+    </script>
+
+    <div id="root">
+      <!-- Optional: Add a minimal static version of your header/nav here -->
+      <div
+        style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: var(--background);
+          z-index: 100;
+        "
+      >
+        <!-- Simple header content that matches your app -->
+      </div>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Add 'loaded' class when React mounts
+      window.addEventListener("load", () => {
+        document.body.classList.add("loaded");
+      });
+    </script>
 
     <!-- Vercel Analytics (optional) -->
     <script defer src="/_vercel/insights/script.js"></script>
