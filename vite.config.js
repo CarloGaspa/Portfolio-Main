@@ -8,6 +8,17 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+    server: {
+      historyApiFallback: true,
+    },
+    build: {
+      outDir: "dist",
+      rollupOptions: {
+        input: {
+          main: "./index.html",
+        },
+      },
+    },
   },
-  envPrefix: "VITE_", // Obbligatorio per esporre variabili al client
+  envPrefix: "VITE_",
 });
