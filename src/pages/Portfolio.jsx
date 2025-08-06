@@ -163,8 +163,8 @@ export default function Portfolio() {
     };
 
   return (
-    <section className="container py-0 lg:py-12 m-auto">
-      <div className="mx-auto max-w-3xl text-center mb-3 lg:mb-16">
+    <section className="container py-0 lg:py-6 m-auto">
+      <div className="mx-auto max-w-3xl text-center mb-3 lg:mb-10">
         <h2 className="text-3xl text-foreground font-bold tracking-tight sm:text-4xl">
           My Projects
         </h2>
