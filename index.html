@@ -2,17 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/portfolio.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Carlo Gasparini | Frontend Developer Portfolio</title>
+    <meta
+      name="title"
+      content="Carlo Gasparini | Frontend Developer Portfolio"
+    />
     <meta
       name="description"
-      content="Portfolio professionale di Carlo Gasparini"
+      content="Professional portfolio of Carlo Gasparini, showcasing React and frontend development projects"
     />
-    <meta name="keywords" content="frontend, developer, portfolio" />
-    <title>Portfolio</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/portfolio.svg" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" as="script" href="/src/main.jsx" />
+    <link rel="preload" as="style" href="/src/index.css" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Vercel Analytics (optional) -->
+    <script defer src="/_vercel/insights/script.js"></script>
   </body>
 </html>
