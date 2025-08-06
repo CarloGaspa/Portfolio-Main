@@ -163,12 +163,12 @@ export default function Portfolio() {
     };
 
   return (
-    <section className="container py-1 lg:py-12 m-auto">
-      <div className="mx-auto max-w-3xl text-center mb-6 lg:mb-16">
+    <section className="container py-0 lg:py-12 m-auto">
+      <div className="mx-auto max-w-3xl text-center mb-3 lg:mb-16">
         <h2 className="text-3xl text-foreground font-bold tracking-tight sm:text-4xl">
           My Projects
         </h2>
-        <p className="mt-2 lg:mt-4 text-lg text-muted-foreground">
+        <p className="mt-1 lg:mt-4 text-lg text-muted-foreground">
           Some of the works I have realized
         </p>
       </div>

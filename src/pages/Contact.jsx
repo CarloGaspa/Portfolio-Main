@@ -236,11 +236,14 @@ ${escapeHTML(data.message)}
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-card rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-3 lg:mb-6 text-center text-foreground">
+      <h1 className="text-3xl font-bold mb-2 lg:mb-6 text-center text-foreground">
         Contact Me
       </h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-3 lg:space-y-6"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -348,20 +351,6 @@ ${escapeHTML(data.message)}
           </Button>
         </form>
       </Form>
-
-      {/* Footer conforme alle normative */}
-      <div className="mt-8 pt-4 border-t border-border text-xs text-muted-foreground text-center">
-        <p>Carlo Gasparini - 31030 Treviso, Italy</p>
-        {/*         <p className="mt-1">
-          <a href="/privacy" className="hover:underline">
-            Privacy Policy
-          </a>{" "}
-          |{" "}
-          <a href="/unsubscribe" className="hover:underline">
-            Unsubscribe
-          </a>
-        </p> */}
-      </div>
     </div>
   );
 }
